@@ -355,7 +355,7 @@ class Game{
             pos++;
         }
         System.out.println("+----+-----------------------------+--------+---------+");
-    } //Atractivo visual
+    } //Atractivo visual (tabla de jugadores)
 }
 
 public class Main{
