@@ -2,11 +2,12 @@ import java.util.*;
 import java.io.*;
 
 class Jugador{
-    private String rut;
-    private String nombreApellido;
+    private String rut; //adicion del atributo RUT
+    private String nombreApellido; //cambio de nombre a playedName
     private int wins;
     private int losses;
     private int draws;
+
     public Jugador(String rut, String nombreApellido){
         this.rut=rut;
         this.nombreApellido=nombreApellido;
@@ -32,116 +33,34 @@ class Jugador{
         winrate= Math.round(winrate*1000)/1000.0f;
         return winrate;
     }
-    public String getRut(){return rut;}
+
+    //Metodos añadidos
+    public String getRut(){
+        return rut;
+    } //Retorna rut de un jugador
     public String getNombreApellido(){
         return nombreApellido;
-    }
+    } //Retorna el nombre y apellido
     public int getWins(){
         return wins;
-    }
+    } //Retorna las victorias
     public int getDraws(){
         return draws;
-    }
+    } //Retorna los empates
     public int getLosses(){
         return losses;
-    }
+    } //Retorna las derrotas
 }
 
 class Scoreboard{
     private TreeMap<Integer, List<String>> winTree;
     private HashMap<String, Jugador> players;
     private int playedGames;
+
     public Scoreboard(){
         winTree = new TreeMap<>();
         players = new HashMap<>();
         playedGames=0;
-    }
-    public void addPlayer(String rut,String nombreApellido){
-        if(!players.containsKey(rut)){
-            Jugador nuevo = new Jugador(rut, nombreApellido);
-            players.put(rut,nuevo);
-            addPlayer_TreeMap(nuevo);
-        }
-    }
-    public void removePlayer(String rut){
-        if(players.containsKey(rut)){
-            Jugador j= players.get(rut);
-            removePlayer_TreeMap(j);
-            players.remove(rut);
-        }
-    }
-    public Jugador getPlayer(String rut){
-        return players.get(rut);
-    }
-    public boolean checkPlayer(String rut){
-        return players.containsKey(rut);
-    }
-    public static boolean isRutValido(String rut){
-        return rut!=null && rut.matches("\\d{7,8}[kK\\d]");
-    }
-    public List<Jugador> getAllPlayers(){
-        return new ArrayList<>(players.values());
-    }
-    public static String pedirRut(Scanner sc, String mensaje){
-        while(true){
-            System.out.print(mensaje);
-            String rut=sc.nextLine().trim();
-            if(isRutValido(rut)){
-                return rut;
-            }
-            System.out.println("Rut inválido. Ingresa solo números, sin puntos ni guión, puede terminar en K.");
-        }
-    }
-    public List<Jugador> playerPorRanking(){
-        List<Jugador> lista= getAllPlayers();
-        lista.sort((a,b)->{
-            if(b.getWins()!=a.getWins()){
-                return Integer.compare(b.getWins(),a.getWins());
-            }
-            else{
-                return Float.compare(b.winRate(),a.winRate());
-            }
-        });
-        return lista;
-    }
-    public List<Jugador> buscarPorWins(int wins){
-        List<Jugador> result = new ArrayList<>();
-        for(Jugador j : players.values()){
-            if(j.getWins()==wins)result.add(j);
-        }
-        return result;
-    }
-    public List<Jugador> PlayerMenosWins(int wins){
-        int menor=-1;
-        for(Jugador j : players.values()){
-            int w=j.getWins();
-            if(w<wins && w>menor){
-                menor=w;
-            }
-        }
-        List<Jugador> result = new ArrayList<>();
-        for(Jugador j : players.values()){
-            if(j.getWins()==menor){
-                result.add(j);
-            }
-        }
-        return result;
-    }
-    public List<Jugador> PlayerMasWins(int wins){
-        int mayor= Integer.MAX_VALUE;
-        for(Jugador j : players.values()){
-            int w= j.getWins();
-            if(w>wins && w<mayor){
-                mayor=w;
-            }
-        }
-        List<Jugador> result=new ArrayList<>();
-        for(Jugador j:players.values()){
-            if(j.getWins()==mayor){
-                result.add(j);
-            }
-        }
-        return result;
     }
     public void addGameResult(String winnerRut, String looserRut, boolean draw){
         registerPlayer(winnerRut,"(SinNombre)");
@@ -169,6 +88,95 @@ class Scoreboard{
             addPlayer_TreeMap(nuevo);
         }
     }
+    public boolean checkPlayer(String rut){
+        return players.containsKey(rut);
+    }
+
+    //Metodos adicionales
+    public void addPlayer(String rut, String nombreApellido){
+        if(!players.containsKey(rut)){
+            Jugador nuevo = new Jugador(rut, nombreApellido);
+            players.put(rut,nuevo);
+            addPlayer_TreeMap(nuevo);
+        }
+    } //añadir player
+    public void removePlayer(String rut){
+        if(players.containsKey(rut)){
+            Jugador j= players.get(rut);
+            removePlayer_TreeMap(j);
+            players.remove(rut);
+        }
+    } //remover player
+    public Jugador getPlayer(String rut){
+        return players.get(rut);
+    } //retornar player
+    public static boolean isRutValido(String rut){
+        return rut!=null && rut.matches("\\d{7,8}[kK\\d]");
+    } //validar si existe el rut ingresado
+    public List<Jugador> getAllPlayers(){
+        return new ArrayList<>(players.values());
+    } //retornar lista de players
+    public static String pedirRut(Scanner sc, String mensaje){
+        while(true){
+            System.out.print(mensaje);
+            String rut=sc.nextLine().trim();
+            if(isRutValido(rut)){
+                return rut;
+            }
+            System.out.println("Rut inválido. Ingresa solo números, sin puntos ni guión, puede terminar en K.");
+        }
+    } //metodo para ingresar rut
+    public List<Jugador> playerPorRanking(){
+        List<Jugador> lista= getAllPlayers();
+        lista.sort((a,b)->{
+            if(b.getWins()!=a.getWins()){
+                return Integer.compare(b.getWins(),a.getWins());
+            }
+            else{
+                return Float.compare(b.winRate(),a.winRate());
+            }
+        });
+        return lista;
+    } //obtener players segun ranking (del mejor al peor segun victorias)
+    public List<Jugador> buscarPorWins(int wins){
+        List<Jugador> result = new ArrayList<>();
+        for(Jugador j : players.values()){
+            if(j.getWins()==wins)result.add(j);
+        }
+        return result;
+    } //reemplazo de winRange(int lo, int hi), metodo solicitado para buscar por cantidad de victorias o cercania.
+    public List<Jugador> PlayerMenosWins(int wins){
+        int menor=-1;
+        for(Jugador j : players.values()){
+            int w=j.getWins();
+            if(w<wins && w>menor){
+                menor=w;
+            }
+        }
+        List<Jugador> result = new ArrayList<>();
+        for(Jugador j : players.values()){
+            if(j.getWins()==menor){
+                result.add(j);
+            }
+        }
+        return result;
+    } //retornar players con menos victorias
+    public List<Jugador> PlayerMasWins(int wins){
+        int mayor= Integer.MAX_VALUE;
+        for(Jugador j : players.values()){
+            int w= j.getWins();
+            if(w>wins && w<mayor){
+                mayor=w;
+            }
+        }
+        List<Jugador> result=new ArrayList<>();
+        for(Jugador j:players.values()){
+            if(j.getWins()==mayor){
+                result.add(j);
+            }
+        }
+        return result;
+    } //retorna lista de players con más victorias
     private void removePlayer_TreeMap(Jugador jugador){
         int wins= jugador.getWins();
         if(winTree.containsKey(wins)){
@@ -178,7 +186,7 @@ class Scoreboard{
                 winTree.remove(wins);
             }
         }
-    }
+    } //remover player del arbol (scoreboard)
     private void addPlayer_TreeMap(Jugador jugador){
         int wins= jugador.getWins();
         winTree.putIfAbsent(wins, new ArrayList<>());
@@ -186,12 +194,13 @@ class Scoreboard{
         if(!lista.contains(jugador.getRut())){
             lista.add(jugador.getRut());
         }
-    }
+    } //añade un player al arbol (scoreboard)
 }
 
 class ConnectFour{
     private char[][] grid;
     private char currentSymbol;
+
     public ConnectFour(){
         grid = new char[7][6];
         for(int col=0; col<7; col++){
@@ -240,6 +249,8 @@ class ConnectFour{
         }
         return "DRAW";
     }
+
+    //Metodos añadidos
     public void printBoard(){
         System.out.println(" 0 1 2 3 4 5 6 ");
         for(int fila=5; fila>=0; fila--){
@@ -249,46 +260,54 @@ class ConnectFour{
             System.out.println("|");
         }
         System.out.println("----------------");
-    }
+    } //Imprime el tablero y el numero de casillas, actualizando cada vez que se juega un turno
 }
 
 class Game{
+    private String status;
     private Jugador jugadorA;
     private Jugador jugadorB;
     private ConnectFour tablero;
-    private Scoreboard ranking;
+    private Scoreboard ranking; //Cambio winnerPlayerName por rankign, para manipular y mostrar la tabla de jugadores
 
     public Game(Jugador jugadorA, Jugador jugadorB, Scoreboard ranking){
         this.jugadorA=jugadorA;
         this.jugadorB=jugadorB;
         this.tablero = new ConnectFour();
         this.ranking=ranking;
+        this.status="IN_PROGRESS";
     }
     public void play(Scanner sc){
         String currentRut=jugadorA.getRut();
         String currentName=jugadorA.getNombreApellido();
         boolean enCurso=true;
+        if(status.equals("IN_PROGRESS")){
+            System.out.println("COMIENZA EL JUEGO");
+        }
         while(enCurso){
             tablero.printBoard();
             System.out.println("Turno de " + currentName + " [" + (currentRut.equals(jugadorA.getRut()) ? "X" : "O") + "]");
             int col=pedirColumna(sc);
             if(!tablero.makeMove(col)){
-                System.out.println("Movimiento inválida, intenta otra columna.");
+                System.out.println("Movimiento inválido, intenta otra columna.");
                 continue;
             }
             String res=tablero.isGameOver();
             if(res!=null){
                 tablero.printBoard();
                 if(res.equals("DRAW")){
-                    System.out.println("¡EMPATE!");
+                    actualizarStatus("DRAW");
+                    System.out.println("- EMPATE -");
                     jugadorA.addDraw();
                     jugadorB.addDraw();
                 }
                 else{
+                    actualizarStatus("VICTORY");
                     Jugador ganador=res.equals("X") ? jugadorA : jugadorB;
                     Jugador perdedor=res.equals("X") ? jugadorB : jugadorA;
                     ganador.addWin();
                     perdedor.addLoss();
+                    System.out.println("¡VICTORIA!");
                     System.out.println("¡Ganador: " + ganador.getNombreApellido() + "!");
                 }
                 enCurso=false;
@@ -305,6 +324,11 @@ class Game{
             }
         }
     }
+
+    //Metodos implementados
+    public void actualizarStatus(String nuevoEstado){
+        this.status = nuevoEstado;
+    } //Actualiza el valor de status
     private int pedirColumna(Scanner sc){
         while(true){
             System.out.print("Columna (0-6): ");
@@ -316,7 +340,7 @@ class Game{
             }catch(Exception e){}
             System.out.println("Columna inválida, intenta de nuevo.");
         }
-    }
+    } //Jugabilidad del tablero
     public static void mostrarTablaJugadores(List<Jugador> lista, int max){
         System.out.println("+----+-----------------------------+--------+---------+" +
                 "\n| #  | Nombre y Apellido (Player)  |  Wins  | Winrate |" +
@@ -331,7 +355,7 @@ class Game{
             pos++;
         }
         System.out.println("+----+-----------------------------+--------+---------+");
-    }
+    } //Atractivo visual
 }
 
 public class Main{
